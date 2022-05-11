@@ -8,9 +8,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+from etablissements.models import Laboratoire
 
 from papiers.models import Papier
 
@@ -103,10 +101,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 class Chercheur(models.Model):
     utilisateur = models.OneToOneField(
         to=Utilisateur, on_delete=models.CASCADE)
-    # universite =
-    # faculté =
-    # departement =
-    # laboratoire =
+    laboratoire = models.ForeignKey(to=Laboratoire, null=True, on_delete=models.SET_NULL)
     papier = models.ManyToManyField(Papier)
 
 
