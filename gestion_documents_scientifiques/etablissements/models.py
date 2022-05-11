@@ -8,3 +8,11 @@ class Universite(models.Model):
 
     def __str__(self) -> str:
         return self.nom
+
+class Faculte(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    universite = models.ForeignKey(to=Universite, null=True, on_delete=models.SET_NULL)
+    nom = models.CharField("Nom de la Faculté", max_length=200, null=False, blank=False)
+
+    def __str__(self) -> str:
+        return self.nom
