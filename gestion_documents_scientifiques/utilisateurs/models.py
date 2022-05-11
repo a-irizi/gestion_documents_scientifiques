@@ -12,7 +12,7 @@ from django.contrib.auth.models import (
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-import utilisateurs
+from papiers.models import Papier
 
 # Create your models here.
 
@@ -107,7 +107,7 @@ class Chercheur(models.Model):
     # faculté =
     # departement =
     # laboratoire =
-    # papier =
+    papier = models.ManyToManyField(Papier)
 
 
 class Thesard(Chercheur):
