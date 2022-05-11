@@ -120,6 +120,21 @@ class Thesard(Chercheur):
 
 
 class Professeur(Chercheur):
-    
+
+    isDirecteurLabo = models.BooleanField(editable=False, default=False)    
     def __str__(self):
         return "Pr. " + str(self.utilisateur)
+
+class DirecteurLaboManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(isDirecteurLabo=True)
+
+class DirecteurLabo(Professeur):
+    objects = DirecteurLaboManager()
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.isDirecteurLabo = True
+        return super().save(*args, **kwargs)
