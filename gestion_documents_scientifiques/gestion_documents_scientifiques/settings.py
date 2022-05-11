@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'utilisateurs',
     'papiers',
+    'etablissements',
 ]
 
 MIDDLEWARE = [
