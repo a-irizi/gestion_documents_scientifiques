@@ -119,3 +119,7 @@ class Thesard(chercheur):
         return self.utilisateur.__str__()
 
 
+class Professeur(chercheur):
+    
+    def __str__(self):
+        return "Pr. " + str(self.utilisateur)

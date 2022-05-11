@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Utilisateur, Thesard
+from .models import Utilisateur, Thesard, Professeur
 from .forms import UtilisateurCreationForm, UtilisateurChangeForm
 # Register your models here.
 
@@ -38,3 +38,4 @@ class UtilisateurAdmin(UserAdmin):
 
 admin.site.register(Utilisateur, UtilisateurAdmin)
 admin.site.register(Thesard)
+admin.site.register(Professeur)
