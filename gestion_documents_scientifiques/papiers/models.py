@@ -8,10 +8,13 @@ class Papier(models.Model):
         WEB_OF_SCIENCE = "WEB_OF_SCIENCE", "Web Of Science"
         AUTRE = "AUTRE", "Autre"
         AUCUNE = "AUCUNE", "Aucune"
-    id = models.UUIDField(uuid.uuid4, editable=False, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     titre = models.CharField("Titre", max_length=200, null=False, blank=False)
     indexation = models.CharField("Indexation", max_length=50, choices=Index.choices, null=False, blank=False)
     est_valide = models.BooleanField(default=False, editable=False)
+
+    def __str__(self):
+        return self.titre
 
 class PublicationRevueInternational(Papier):
     nomJournal = models.CharField("Nom Du Journal", max_length=200, null=False, blank=False)
