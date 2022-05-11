@@ -100,8 +100,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
         return result
 
-
-class Thesard(models.Model):
+class chercheur(models.Model):
     utilisateur = models.OneToOneField(
         to=Utilisateur, on_delete=models.CASCADE)
     # universite =
@@ -109,6 +108,9 @@ class Thesard(models.Model):
     # departement =
     # laboratoire =
     # papier =
+
+
+class Thesard(chercheur):
     anneeDebutDoctorat = models.PositiveIntegerField(null=False, blank=False)
     sujetThese = models.CharField(max_length=200, null=False, blank=False)
     directeurThese = models.ForeignKey(to="Professeur", on_delete=models.CASCADE)
