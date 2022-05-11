@@ -20,3 +20,26 @@ class PublicationRevueInternational(Papier):
     anneePublication = models.PositiveSmallIntegerField("Année de Publication", null=False, blank=False)
     pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
     pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
+
+
+class ChapitreOuvrage(Papier):
+    nomOuvrage = models.CharField("Nom d'Ouvrage", max_length=200, null=False, blank=False)
+    EditionOuvrage = models.PositiveIntegerField("Edition d'Ouvrage", null=False, blank=False)
+    nomChapitre = models.CharField("Nom du Chapitre", max_length=200, null=False, blank=False)
+    datePublication = models.DateField("Date de Publication", null=False, blank=False)
+    pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
+    pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
+
+class CommunicationInternational(Papier):
+    class CommunicationInternationalType(models.TextChoices):
+        WORKSHOP = "WORKSHOP", "Workshop"
+        CONFERENCE = "CONFERENCE", "Conference"
+        AUTRE = "AUTRE", "Autre"
+
+    nomConférence = models.CharField("Nom du Conférence", max_length=200, null=False, blank=False)
+    ville = models.CharField("Ville", max_length=200, null=False, blank=False)
+    pays = models.CharField("Pays", max_length=200, null=False, blank=False)
+    date = models.DateField("Date du Conférence", null=False, blank=False)
+    pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
+    pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
+    type = models.CharField("Type", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
