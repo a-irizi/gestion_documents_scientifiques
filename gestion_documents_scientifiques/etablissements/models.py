@@ -24,3 +24,12 @@ class Departement(models.Model):
 
     def __str__(self) -> str:
         return self.nom
+
+class Laboratoire(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    departement = models.ForeignKey(to=Departement, null=True, on_delete=models.SET_NULL)
+    nom = models.CharField("Nom du Laboratoire", max_length=200, null=False, blank=False)
+
+    def __str__(self) -> str:
+        return self.nom
+
