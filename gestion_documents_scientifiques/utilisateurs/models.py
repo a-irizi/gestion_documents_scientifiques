@@ -100,3 +100,20 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
         return result
 
+
+class Thesard(models.Model):
+    utilisateur = models.OneToOneField(
+        to=Utilisateur, on_delete=models.CASCADE)
+    # universite =
+    # faculté =
+    # departement =
+    # laboratoire =
+    # papier =
+    anneeDebutDoctorat = models.PositiveIntegerField(null=False, blank=False)
+    sujetThese = models.CharField(max_length=200, null=False, blank=False)
+    directeurThese = models.ForeignKey(to="Professeur", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.utilisateur.__str__()
+
+
