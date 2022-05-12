@@ -1,3 +1,4 @@
+import email
 from types import CellType
 from django import forms
 from . import models
@@ -41,32 +42,79 @@ class UtilisateurChangeForm(forms.ModelForm):
         model = models.Utilisateur
         fields = ('email', 'prenom', 'deuxiemeNom', 'nom',)
 
-class chercheurCreationForm(forms.ModelChoiceField):
-    class Meta:
-        model = models.Chercheur
-        fields = ['laboratoire']
+class ChercheurForm(forms.Form):
+    prenom = forms.CharField(label="Prenom", max_length=200, required=True)
+    nom= forms.CharField(label="Nom", max_length=200, required=True)
+    deuxiemeNom = forms.CharField(label="Deuxieme Nom", max_length=200, required=False)
+    email = forms.EmailField(label="Email", max_length=200, required=True)
+    password1 = forms.CharField(label="Mot de passe", max_length=200, required=True, widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirmer mot de passe", max_length=200, required=True, widget=forms.PasswordInput)
 
-class ThesardCreationForm(forms.ModelForm):
-    class Meta:
-        model = models.Thesard
-        exclude = ['utilisateur', 'papier']
+    labos = models.Laboratoire.objects.all()
+    laboratoire = forms.ModelChoiceField(label="Laboratoire", queryset=labos, required=True, widget=forms.Select)
+
+    def clean_password2(self):
+        # Check that the two password entries match
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Les mots de passe ne correspondent pas")
+        return password2
     
     def save(self, commit=True):
-        user= super().save(commit=False)
-        user.type = models.Chercheur.ChercheurType.THESARD
-        if commit:
-            user.save()
-        return user
+        prenom = self.cleaned_data["prenom"]
+        nom= self.cleaned_data["nom"]
+        deuxiemeNom = self.cleaned_data["deuxiemeNom"]
+        email = self.cleaned_data["email"]
+        password = self.cleaned_data["password2"]
 
-class ProfesseurCreationForm(forms.ModelForm):
-    class Meta:
-        model = models.Professeur
-        exclude = ['isDirecteurLabo', 'utilisateur', 'papier']
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.type = models.Chercheur.ChercheurType.PROFESSEUR
-        user.isDirecteurLabo = False
+        laboratoire =  self.cleaned_data["laboratoire"]
+
+        utilisateur = models.Utilisateur(nom=nom, prenom=prenom, deuxiemeNom=deuxiemeNom, email=email)
+        utilisateur.set_password(password)
+        utilisateur.is_active = False;
+        
+        chercheur = models.Chercheur(utilisateur=utilisateur, laboratoire=laboratoire)
+        chercheur.emailValide = False
+
         if commit:
-            user.save()
-        return user
+            utilisateur.save()
+            chercheur.save()
+        return (utilisateur, chercheur)
+
+class ProfesseurForm(ChercheurForm):
+
+    def save(self, commit=True):
+        utilisateur, chercheur = super().save(commit=False)
+        chercheur.type = models.Chercheur.ChercheurType.PROFESSEUR
+        professeur = models.Professeur()
+        professeur.chercheur = chercheur
+        professeur.isDirecteurLabo = False
+        if commit:
+            utilisateur.save()
+            chercheur.save()
+            professeur.save()
+        return utilisateur, chercheur, professeur
+
+class ThesardForm(ChercheurForm):
+    anneeDebutDoctorat = forms.IntegerField(label="Annee du début de doctorat", required=True)
+    sujetThese = forms.CharField(label="Sujet du thése", max_length=200, required=True)
+
+    directeursT = models.Professeur.objects.all()
+    directeurThese = forms.ModelChoiceField(label="Directeur de These", queryset=directeursT, required=True, widget=forms.Select)
+
+    def save(self, commit=True):
+        anneeDebutDoctorat = self.cleaned_data["anneeDebutDoctorat"]
+        sujetThese = self.cleaned_data["sujetThese"]
+        directeurThese = self.cleaned_data["directeurThese"]
+
+        utilisateur, chercheur = super().save(commit=False)
+
+        chercheur.type = models.Chercheur.ChercheurType.THESARD
+        thesard = models.Thesard(anneeDebutDoctorat=anneeDebutDoctorat, sujetThese=sujetThese, directeurThese=directeurThese)
+        thesard.chercheur = chercheur
+        if commit:
+            utilisateur.save()
+            chercheur.save()
+            thesard.save()
+        return utilisateur, chercheur, thesard
