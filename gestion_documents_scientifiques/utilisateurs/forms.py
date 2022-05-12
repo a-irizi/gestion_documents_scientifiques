@@ -10,8 +10,9 @@ class UtilisateurCreationForm(forms.ModelForm):
 
     class Meta:
         model = models.Utilisateur
-        fields = '__all__'
-
+        fields = ['prenom', 'deuxiemeNom', 'nom', 'email']
+    
+    field_order = ['prenom', 'deuxiemeNom', 'nom', 'email', 'password1', 'password2']
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -38,3 +39,19 @@ class UtilisateurChangeForm(forms.ModelForm):
         model = models.Utilisateur
         fields = ('email', 'prenom', 'deuxiemeNom', 'nom',)
 
+class chercheurCreationForm(forms.ModelChoiceField):
+    class Meta:
+        model = models.Chercheur
+        fields = ['laboratoire']
+
+class ThesardCreationForm(forms.ModelForm):
+    class Meta:
+        model = models.Thesard
+        exclude = ['utilisateur', 'papier']
+    
+    def save(self, commit=True):
+        user= super().save(commit=False)
+        user.type = user.ChercheurType.THESARD
+        if commit:
+            user.save()
+        return user

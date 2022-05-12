@@ -99,8 +99,12 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
         return result
 
 class Chercheur(models.Model):
+    class ChercheurType(models.TextChoices):
+        THESARD = "THESARD", "Thésard"
+        PROFESSEUR = "PROFESSEUR", "Professeur"
     utilisateur = models.OneToOneField(
         to=Utilisateur, on_delete=models.CASCADE)
+    type = models.CharField("Type", max_length=50, editable=False, choices=ChercheurType.choices, null=False, blank=False)
     laboratoire = models.ForeignKey(to=Laboratoire, null=True, on_delete=models.SET_NULL)
     papier = models.ManyToManyField(Papier)
 
