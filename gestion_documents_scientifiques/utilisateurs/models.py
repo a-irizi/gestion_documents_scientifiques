@@ -110,20 +110,21 @@ class Chercheur(models.Model):
     papier = models.ManyToManyField(Papier)
 
 
-class Thesard(Chercheur):
+class Thesard(models.Model):
+    chercheur = models.OneToOneField(to=Chercheur, on_delete=models.CASCADE)
     anneeDebutDoctorat = models.PositiveIntegerField(null=False, blank=False)
     sujetThese = models.CharField(max_length=200, null=False, blank=False)
     directeurThese = models.ForeignKey(to="Professeur", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.utilisateur.__str__()
+        return str(self.chercheur.utilisateur)
 
 
-class Professeur(Chercheur):
-
+class Professeur(models.Model):
+    chercheur = models.OneToOneField(to=Chercheur, on_delete=models.CASCADE)
     isDirecteurLabo = models.BooleanField(editable=False, default=False)    
     def __str__(self):
-        return "Pr. " + str(self.utilisateur)
+        return "Pr. " + str(self.chercheur.utilisateur)
 
 class DirecteurLaboManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
