@@ -1,11 +1,11 @@
 <div>
     <form action="{% url 'register-professeur' %}" method="post">
         {% csrf_token %}
+        <!-- <div>
+            {{ utilisateurForm.as_p }}
+        </div> -->
         <div>
             {{ chercheurForm.as_p }}
-        </div>
-        <div>
-            {{ professeurForm.as_p }}
         </div>
         <input type="submit" value="Inscrire">
     </form>
