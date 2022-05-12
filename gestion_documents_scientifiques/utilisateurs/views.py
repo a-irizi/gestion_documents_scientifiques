@@ -6,9 +6,9 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
 
-from utilisateurs.models import Chercheur, Professeur, Thesard
+from utilisateurs.models import Chercheur
 
-from .forms import ProfesseurCreationForm, UtilisateurCreationForm, ThesardCreationForm
+from .forms import ChercheurForm, ProfesseurForm, ThesardForm
 from .tokens import emailActivationToken
 
 # Create your views here.
@@ -20,8 +20,8 @@ def sendEmailConfirmationEmail(user, toEmail):
     message = render_to_string('utilisateurs/email-confirmation-email.html', {
         'user': user,
         'domain': '127.0.0.1:8000',
-        'uid': urlsafe_base64_encode(force_bytes(user.utilisateur.pk)),
-        'token':emailActivationToken.make_token(user),
+        'uid': urlsafe_base64_encode(force_bytes(user.chercheur.utilisateur.pk)),
+        'token': emailActivationToken.make_token(user),
     })
     print(message)
     email = EmailMessage(
@@ -32,40 +32,34 @@ def sendEmailConfirmationEmail(user, toEmail):
 
 def registerThesard(request:HttpRequest):
     if request.method == "POST":
-        utilisateurForm = UtilisateurCreationForm(request.POST)
-        thesardForm = ThesardCreationForm(request.POST)
-        if utilisateurForm.is_valid() and thesardForm.is_valid():
-            utilisateur = utilisateurForm.save(commit=False)
-            utilisateur.is_active = False
+        thesardForm = ThesardForm(request.POST)
+        if thesardForm.is_valid():
+            utilisateur, chercheur, thesard = thesardForm.save(commit=False)
             utilisateur.save()
-            thesard = thesardForm.save(commit=False)
-            thesard.utilisateur = utilisateur
-            thesard.emailValide = False
+            chercheur.save()
             thesard.save()
-            sendEmailConfirmationEmail(thesard, utilisateur.email)
+            sendEmailConfirmationEmail(utilisateur, utilisateur.email)
             return render(request, 'utilisateurs/page-instruction-validation-email.html')
-    utilisateurForm = UtilisateurCreationForm()
-    thesardForm = ThesardCreationForm()
-    context = {'chercheurForm': utilisateurForm,'thesardForm': thesardForm,}
+    thesardForm = ThesardForm()
+    context = {'thesardForm': thesardForm,}
 
     return render(request, 'utilisateurs/register-thesard.html', context=context)
 
 def registerProfesseur(request):
     if request.method == "POST":
-        utilisateurForm = UtilisateurCreationForm(request.POST)
-        professeurForm = ProfesseurCreationForm(request.POST)
-        if utilisateurForm.is_valid() and professeurForm.is_valid():
-            utilisateur = utilisateurForm.save(commit=False)
-            utilisateur.is_active = False
+        professeurForm = ProfesseurForm(request.POST)
+        if professeurForm.is_valid():
+            utilisateur, chercheur, professeur = professeurForm.save(commit=False)
             utilisateur.save()
-            professeur = professeurForm.save(commit=False)
-            professeur.utilisateur = utilisateur
+            chercheur.save()
             professeur.save()
-            sendEmailConfirmationEmail(professeur, utilisateur.email)
+            sendEmailConfirmationEmail(utilisateur, utilisateur.email)
             return render(request, 'utilisateurs/page-instruction-validation-email.html')
-    utilisateurForm = UtilisateurCreationForm()
-    professeurForm = ProfesseurCreationForm()
-    context = {'chercheurForm': utilisateurForm, 'professeurForm': professeurForm}
+    chercheurForm = ChercheurForm()
+    context = {
+        # 'utilisateurForm': utilisateurForm,
+        'chercheurForm': chercheurForm,
+    }
 
     return render(request, 'utilisateurs/register-professeur.html', context=context)
 
@@ -79,20 +73,14 @@ def confirmEmail(request, uidb64, token):
     except(TypeError, ValueError, OverflowError, Chercheur.DoesNotExist):
         chercheur = None
         uid = None
-    if chercheur is not None and emailActivationToken.check_token(chercheur, token=token):
+    if chercheur is not None and emailActivationToken.check_token(chercheur.utilisateur, token=token):
+        chercheur.emailValide = True
+        chercheur.save()
         if chercheur.type == Chercheur.ChercheurType.THESARD:
-            thesard = Thesard.objects.get(pk=uid)
-            thesard.emailValide = True
-            thesard.save()
-            # send notification to directeur de thése
-            # thesard = Thesard.objects.get(pk=uid)
-            
+            # send notification to directeur de thése            
             return HttpResponse("you are a thesard")
         elif chercheur.type == Chercheur.ChercheurType.PROFESSEUR:
-            professeur = Professeur.objects.get(pk=uid)
-            professeur.emailValide = True
-            professeur.save()
-
+            # send notification to directeur de departement
             return HttpResponse("you are a professeur")
     else:
         return HttpResponse(f"uid : {uid}, user uid: {chercheur.utilisateur.pk}, checktoken = {emailActivationToken.check_token(chercheur, token=token)}")

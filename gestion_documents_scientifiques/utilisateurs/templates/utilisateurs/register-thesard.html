@@ -2,9 +2,6 @@
     <form action="{% url 'register-thesard' %}" method="post">
         {% csrf_token %}
         <div>
-            {{ chercheurForm.as_p }}
-        </div>
-        <div>
             {{ thesardForm.as_p }}
         </div>
         <input type="submit" value="Inscrire">
