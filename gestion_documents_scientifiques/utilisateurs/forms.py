@@ -1,3 +1,4 @@
+from types import CellType
 from django import forms
 from . import models
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
@@ -52,7 +53,7 @@ class ThesardCreationForm(forms.ModelForm):
     
     def save(self, commit=True):
         user= super().save(commit=False)
-        user.type = user.ChercheurType.THESARD
+        user.type = models.Chercheur.ChercheurType.THESARD
         if commit:
             user.save()
         return user
@@ -64,6 +65,7 @@ class ProfesseurCreationForm(forms.ModelForm):
     
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.type = models.Chercheur.ChercheurType.PROFESSEUR
         user.isDirecteurLabo = False
         if commit:
             user.save()
