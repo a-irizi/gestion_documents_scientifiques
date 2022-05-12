@@ -105,6 +105,7 @@ class Chercheur(models.Model):
     utilisateur = models.OneToOneField(
         to=Utilisateur, on_delete=models.CASCADE)
     type = models.CharField("Type", max_length=50, editable=False, choices=ChercheurType.choices, null=False, blank=False)
+    emailValide = models.BooleanField(default=False, editable=False)
     laboratoire = models.ForeignKey(to=Laboratoire, null=True, on_delete=models.SET_NULL)
     papier = models.ManyToManyField(Papier)
 
