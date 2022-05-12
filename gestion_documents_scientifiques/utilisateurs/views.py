@@ -6,9 +6,9 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
 
-from utilisateurs.models import Chercheur, Professeur, Thesard
+from utilisateurs.models import Chercheur
 
-from .forms import ChercheurForm, ProfesseurCreationForm, ProfesseurForm, ThesardForm, UtilisateurCreationForm, ThesardCreationForm, chercheurCreationForm
+from .forms import ChercheurForm, ProfesseurForm, ThesardForm
 from .tokens import emailActivationToken
 
 # Create your views here.
