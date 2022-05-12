@@ -1,6 +1,7 @@
 from django import forms
 from . import models
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+import etablissements
 
 class UtilisateurCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -52,6 +53,18 @@ class ThesardCreationForm(forms.ModelForm):
     def save(self, commit=True):
         user= super().save(commit=False)
         user.type = user.ChercheurType.THESARD
+        if commit:
+            user.save()
+        return user
+
+class ProfesseurCreationForm(forms.ModelForm):
+    class Meta:
+        model = models.Professeur
+        exclude = ['isDirecteurLabo', 'utilisateur', 'papier']
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.isDirecteurLabo = False
         if commit:
             user.save()
         return user
