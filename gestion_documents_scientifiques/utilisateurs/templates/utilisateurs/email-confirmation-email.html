@@ -1,6 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <h3>Confirmation E-mail</h3>
 Pour compléter votre inscription, vous êtes tenus de confirmer votre e-mail.<br />
 Clicker sur le lien ci-dessous pour confirmer votre e-mail:<br />
 <a href="http://{{domain}}{% url 'confirm-email' uidb64=uid token=token %}">
      Clicker ici
 </a>
+{% endblock content %}

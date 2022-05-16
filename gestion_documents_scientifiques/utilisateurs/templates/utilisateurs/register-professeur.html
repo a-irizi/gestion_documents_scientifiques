@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <div>
     <form action="{% url 'register-professeur' %}" method="post">
         {% csrf_token %}
@@ -10,3 +13,4 @@
         <input type="submit" value="Inscrire">
     </form>
 </div>
+{% endblock content %}
