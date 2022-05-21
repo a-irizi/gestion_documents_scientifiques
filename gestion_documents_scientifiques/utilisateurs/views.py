@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
 
-from .models import Chercheur, Professeur, Thesard
+from .models import Chercheur, DirecteurLabo, Professeur, Thesard
 
 from .forms import ChercheurForm, ProfesseurForm, ThesardForm
 from .tokens import tokenGenerator
@@ -20,7 +20,7 @@ def sendEmailConfirmationEmail(user, toEmail):
     message = render_to_string('utilisateurs/email-confirmation-email.html', {
         'user': user,
         'domain': '127.0.0.1:8000',
-        'uid': urlsafe_base64_encode(force_bytes(user.chercheur.utilisateur.pk)),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': tokenGenerator.make_token(user),
     })
     email = EmailMessage(
@@ -35,7 +35,7 @@ def sendThesardAccountConfirmationEmail(user, toEmail):
         'user': user,
         'domain': '127.0.0.1:8000',
         'uid1': urlsafe_base64_encode(force_bytes(user.chercheur.thesard.directeurThese.chercheur.utilisateur.pk)),
-        'uid2': urlsafe_base64_encode(force_bytes(user.chercheur.utilisateur.pk)),
+        'uid2': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': tokenGenerator.make_token(user.chercheur.thesard.directeurThese.chercheur.utilisateur),
     })
     email = EmailMessage(
@@ -44,6 +44,21 @@ def sendThesardAccountConfirmationEmail(user, toEmail):
     email.content_subtype = "html"
     email.send()
 
+def sendProfesseurAccountConfirmationEmail(user):
+    mail_subject = 'Valider Un compte professeur'
+    directeurLabo = DirecteurLabo.objects.get()
+    message = render_to_string('utilisateurs/professeur-account-confirmation-email.html', {
+        'user': user,
+        'domain': '127.0.0.1:8000',
+        'uid1': urlsafe_base64_encode(force_bytes(directeurLabo.chercheur.utilisateur.pk)),
+        'uid2': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': tokenGenerator.make_token(directeurLabo.chercheur.utilisateur),
+    })
+    email = EmailMessage(
+                mail_subject, message, to=[directeurLabo.chercheur.utilisateur.email]
+    )
+    email.content_subtype = "html"
+    email.send()
 
 def registerThesard(request:HttpRequest):
     if request.method == "POST":
@@ -99,12 +114,15 @@ def confirmEmail(request, uidb64, token):
             return render(request, 'utilisateurs/page-instruction-apres-validation-email-thesard.html')
         elif chercheur.type == Chercheur.ChercheurType.PROFESSEUR:
             # send notification to directeur de departement
-            return HttpResponse("you are a professeur")
+            utilisateur =  chercheur.utilisateur
+            sendProfesseurAccountConfirmationEmail(utilisateur)
+
+            return render(request, "utilisateurs/page-instruction-apres-validation-email-professeur.html")
     else:
         return HttpResponse(f"uid : {uid}, user uid: {chercheur.utilisateur.pk}, checktoken = {tokenGenerator.check_token(chercheur.utilisateur, token=token)}")
 
 def notifyAccountValidation(toEmail):
-    mail_subject = 'Valider Un compte thesard'
+    mail_subject = 'Notification du validation du compte'
     message = render_to_string('utilisateurs/message-validation-compte.html', {
         'domain': '127.0.0.1:8000',
     })
@@ -141,3 +159,30 @@ def confirmThesardAccount(request, prof_uidb64, thesard_uidb64, token):
         return render(request, 'utilisateurs/page-validation-compte.html')
     else:
         return HttpResponse(f"uid : {uid}, thesard: {thesard is not None}, professeur: {professeur is not None} checktoken = {tokenGenerator.check_token(professeur.chercheur.utilisateur, token=token)}")
+
+def confirmProfesseurAccount(request, prof_uidb64, directeurLabo_uidb64, token):
+    directeurLabo = None
+    dluid = None
+    professeur = None
+    puid = None
+    try:
+        dluid = uuid.UUID((force_str(urlsafe_base64_decode(prof_uidb64))))
+        directeurLabo = DirecteurLabo.objects.get(chercheur__utilisateur__pk=dluid)
+    except(TypeError, ValueError, OverflowError, Professeur.DoesNotExist, Thesard.DoesNotExist):
+        directeurLabo = None
+        uid = None
+
+    try:
+        puid = uuid.UUID((force_str(urlsafe_base64_decode(directeurLabo_uidb64))))
+        professeur = Professeur.objects.get(chercheur__utilisateur__pk=puid)
+    except(TypeError, ValueError, OverflowError, Professeur.DoesNotExist, Thesard.DoesNotExist):
+        directeurLabo = None
+        uid = None
+
+    if directeurLabo is not None and professeur is not None and tokenGenerator.check_token(directeurLabo.chercheur.utilisateur, token=token):
+        professeur.chercheur.utilisateur.is_active = True
+        professeur.chercheur.utilisateur.save()
+        notifyAccountValidation(professeur.chercheur.utilisateur.email)
+        return render(request, 'utilisateurs/page-validation-compte.html')
+    else:
+        return HttpResponse(f"uid : {uid}, professeur: {professeur is not None}, directeurLabo: {directeurLabo is not None} checktoken = {tokenGenerator.check_token(directeurLabo.chercheur.utilisateur, token=token)}")
