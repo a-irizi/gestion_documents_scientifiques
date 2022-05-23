@@ -104,10 +104,11 @@ class Chercheur(models.Model):
         PROFESSEUR = "PROFESSEUR", "Professeur"
     utilisateur = models.OneToOneField(
         to=Utilisateur, on_delete=models.CASCADE)
+    # TODO: make this field editable
     type = models.CharField("Type", max_length=50, editable=False, choices=ChercheurType.choices, null=False, blank=True)
     emailValide = models.BooleanField(default=False, editable=False)
     laboratoire = models.ForeignKey(to=Laboratoire, null=True, on_delete=models.SET_NULL)
-    papier = models.ManyToManyField(Papier, blank=True)
+    papiers = models.ManyToManyField(Papier, blank=True)
 
 
 class Thesard(models.Model):
