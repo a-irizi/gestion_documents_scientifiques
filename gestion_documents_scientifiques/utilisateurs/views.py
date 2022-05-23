@@ -207,3 +207,8 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+def account(request):
+    user = request.user
+    context = {'user': user}
+    return render(request, 'utilisateurs/profile.html')
