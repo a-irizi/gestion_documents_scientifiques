@@ -31,3 +31,20 @@ class ChapitreOuvrageForm(forms.ModelForm):
         if commit:
             chap.save()
         return chap
+
+
+class CommunicationInternationalForm(forms.ModelForm):
+    class Meta:
+        model = models.CommunicationInternational
+        fields = ['papier', 'titre', 'indexation', 'communication', 'communicationInternationalType', 'date', 'nomConférence', 'ville', 'pays', 'pageDébut', 'pageFin',
+                  ]
+        widgets = {
+            'date': forms.SelectDateWidget(),
+        }
+
+    def save(self, commit=True):
+        com = super().save(commit=False)
+        com.papierType = models.Papier.PapierType.COMMUNICATION_INTERNATIONAL
+        if commit:
+            com.save()
+        return com
