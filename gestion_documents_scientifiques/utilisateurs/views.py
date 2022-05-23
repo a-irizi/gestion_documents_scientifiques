@@ -201,7 +201,7 @@ def loginUser(request):
         utilisateur = authenticate(username=email, password=password)
         if utilisateur is not None:
             login(request, utilisateur)
-            return HttpResponse('You are now Logged in')
+            return redirect('account')
     return render(request, 'utilisateurs/login.html')
 
 def logoutUser(request):
