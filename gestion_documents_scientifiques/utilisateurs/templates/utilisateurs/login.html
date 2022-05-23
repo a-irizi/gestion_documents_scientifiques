@@ -1,0 +1,14 @@
+<div>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <div>
+            <label for="id-email">Email</label>
+            <input type="email" name="email" id="id-email">
+        </div>
+        <div>
+            <label for="id-password">Mot de Passe</label>
+            <input type="password" name="password" id="id-password">
+        </div>
+        <input type="submit" value="Connecter">
+    </form>
+</div>

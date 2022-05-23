@@ -1,10 +1,11 @@
 import uuid
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
+from django.contrib.auth import authenticate, login, logout
 
 from .models import Chercheur, DirecteurLabo, Professeur, Thesard
 
@@ -186,3 +187,23 @@ def confirmProfesseurAccount(request, prof_uidb64, directeurLabo_uidb64, token):
         return render(request, 'utilisateurs/page-validation-compte.html')
     else:
         return HttpResponse(f"uid : {uid}, professeur: {professeur is not None}, directeurLabo: {directeurLabo is not None} checktoken = {tokenGenerator.check_token(directeurLabo.chercheur.utilisateur, token=token)}")
+
+
+def loginUser(request):
+    if request.user.is_authenticated:
+        return HttpResponse('You are already logged in!')
+    email = None
+    password = None
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+
+        utilisateur = authenticate(username=email, password=password)
+        if utilisateur is not None:
+            login(request, utilisateur)
+            return HttpResponse('You are now Logged in')
+    return render(request, 'utilisateurs/login.html')
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
