@@ -51,4 +51,4 @@ class CommunicationInternational(Papier):
     pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
     pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
     communication = models.FileField("Communication", upload_to='files/')
-    communicationInternationalType = models.CharField("Type", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
+    communicationInternationalType = models.CharField("Type De Communication", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
