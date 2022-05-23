@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import confirmProfesseurAccount, confirmThesardAccount, loginUser, logoutUser, account, register, registerProfesseur, registerThesard, confirmEmail
+from .views import addChapitreOuvrage, addCommunicationInternational, addPaper, addPublicationRevueInternational, confirmProfesseurAccount, confirmThesardAccount, loginUser, logoutUser, account, papersPage, register, registerProfesseur, registerThesard, confirmEmail
 
 urlpatterns = [
     path('register/', register, name="register"),
@@ -14,5 +14,11 @@ urlpatterns = [
     path('logout/', logoutUser, name='logout'),
 
     path('account/', account, name='account'),
+    path('papers/', papersPage, name='papers-page'),
+    path('papers/add-papers/', addPaper, name='add-papers-page'),
+    path('papers/add-papers/publication-revue-international/', addPublicationRevueInternational, name='add-publication-revue-international-page'),
+    path('papers/add-papers/chapitre-ouvrage/', addChapitreOuvrage, name='add-chapitre-ouvrage'),
+    path('papers/add-papers/communication-international/', addCommunicationInternational, name='add-communication-international'),
+
 ]
     

@@ -1,0 +1,13 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+    <div><a href="{% url 'add-papers-page' %}">Ajouter Papier</a></div>
+    <div>
+        {% for papier in papiers %}
+        <div>
+            {{papier}}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

@@ -1,3 +1,4 @@
+from multiprocessing import context
 import uuid
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -12,6 +13,8 @@ from .models import Chercheur, DirecteurLabo, Professeur, Thesard
 
 from .forms import ChercheurForm, ProfesseurForm, ThesardForm
 from .tokens import tokenGenerator
+
+from papiers.forms import ChapitreOuvrageForm, CommunicationInternationalForm, PublicationRevueInternationalForm
 
 # TODO: Remove browser cache after user logout
 
@@ -215,3 +218,51 @@ def account(request):
     user = request.user
     context = {'user': user}
     return render(request, 'utilisateurs/profile.html')
+
+def papersPage(request):
+    user = request.user
+    papiers = user.chercheur.papiers.all()
+    context = {'user': user, 'papiers': papiers}
+    return render(request, 'utilisateurs/papiers.html', context=context)
+
+def addPaper(request):
+    return render(request, 'utilisateurs/papiers-choix.html')
+
+def addPublicationRevueInternational(request):
+    if request.method == 'POST':
+        form = PublicationRevueInternationalForm(request.POST, request.FILES)
+        pub = form.save()
+        user = request.user
+        user.chercheur.papiers.add(pub)
+        user.save()
+        return redirect('papers-page')
+    
+    form = PublicationRevueInternationalForm()
+    context = {'form': form}
+    return render(request, 'utilisateurs/ajouter-publication-revue-international.html', context=context)
+
+def addChapitreOuvrage(request):
+    if request.method == 'POST':
+        form = ChapitreOuvrageForm(request.POST, request.FILES)
+        chp = form.save()
+        user = request.user
+        user.chercheur.papiers.add(chp)
+        user.save()
+        return redirect('papers-page')
+    
+    form = ChapitreOuvrageForm()
+    context = {'form': form}
+    return render(request, 'utilisateurs/ajouter-chapitre-ouvrage.html', context=context)
+
+def addCommunicationInternational(request):
+    if request.method == 'POST':
+        form = CommunicationInternationalForm(request.POST, request.FILES)
+        com = form.save()
+        user = request.user
+        user.chercheur.papiers.add(com)
+        user.save()
+        return redirect('papers-page')
+    
+    form = CommunicationInternationalForm()
+    context = {'form': form}
+    return render(request, 'utilisateurs/ajouter-communication-international.html', context=context)

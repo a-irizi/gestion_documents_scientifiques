@@ -1,0 +1,7 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <div><a href="{% url 'add-publication-revue-international-page' %}">Publication dans un Revue International</a></div>
+    <div><a href="{% url 'add-chapitre-ouvrage' %}">Chapitre dans un Ouvrage</a></div>
+    <div><a href="{% url 'add-communication-international' %}">Communication International</a></div>
+{% endblock content %}
