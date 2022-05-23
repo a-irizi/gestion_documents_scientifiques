@@ -100,7 +100,7 @@ class ThesardForm(ChercheurForm):
     anneeDebutDoctorat = forms.IntegerField(label="Annee du début de doctorat", required=True)
     sujetThese = forms.CharField(label="Sujet du thése", max_length=200, required=True)
 
-    directeursT = models.Professeur.objects.all()
+    directeursT = models.Professeur.objects.filter(chercheur__utilisateur__is_active=True)
     directeurThese = forms.ModelChoiceField(label="Directeur de These", queryset=directeursT, required=True, widget=forms.Select)
 
     def save(self, commit=True):

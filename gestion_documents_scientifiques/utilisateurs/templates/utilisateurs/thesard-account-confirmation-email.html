@@ -1,0 +1,9 @@
+<h3>Confirmation du compte thésard</h3>
+<div>Un thésard vous a choisi comme Directeur de Thése, voici ses informations:</div>
+<div><b>Nom Complet: </b>{{user.prenom}}{% if user.deuxiemeNom %} {{user.deuxiemeNom}}{% endif %} {{user.nom}}</div>
+<div><b>Email: </b>{{user.email}}</div>
+<div><b>Sujet du Thése: </b>{{user.chercheur.thesard.sujetThese}}</div>
+<div>Clicker sur le lien ci-dessous pour valider ce compte:</div>
+<a href="http://{{domain}}{% url 'confirm-thesard-account' prof_uidb64=uid1 thesard_uidb64=uid2 token=token %}">
+     Clicker ici
+</a>

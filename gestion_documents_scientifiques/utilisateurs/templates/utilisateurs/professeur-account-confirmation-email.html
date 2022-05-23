@@ -1,0 +1,8 @@
+<h3>Confirmation du compte Professeur</h3>
+<div>Un Professeur a choisi votre labo lors son inscription:</div>
+<div><b>Nom Complet: </b>{{user.prenom}}{% if user.deuxiemeNom %} {{user.deuxiemeNom}}{% endif %} {{user.nom}}</div>
+<div><b>Email: </b>{{user.email}}</div>
+<div>Clicker sur le lien ci-dessous pour valider ce compte:</div>
+<a href="http://{{domain}}{% url 'confirm-professeur-account' prof_uidb64=uid1 directeurLabo_uidb64=uid2 token=token %}">
+     Clicker ici
+</a>
