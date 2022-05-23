@@ -6,11 +6,14 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.cache import cache_control
 
 from .models import Chercheur, DirecteurLabo, Professeur, Thesard
 
 from .forms import ChercheurForm, ProfesseurForm, ThesardForm
 from .tokens import tokenGenerator
+
+# TODO: Remove browser cache after user logout
 
 # Create your views here.
 def register(request):
@@ -188,7 +191,7 @@ def confirmProfesseurAccount(request, prof_uidb64, directeurLabo_uidb64, token):
     else:
         return HttpResponse(f"uid : {uid}, professeur: {professeur is not None}, directeurLabo: {directeurLabo is not None} checktoken = {tokenGenerator.check_token(directeurLabo.chercheur.utilisateur, token=token)}")
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def loginUser(request):
     if request.user.is_authenticated:
         return HttpResponse('You are already logged in!')
