@@ -16,7 +16,7 @@ class Papier(models.Model):
     titre = models.CharField("Titre", max_length=200, null=False, blank=False)
     indexation = models.CharField("Indexation", max_length=50, choices=Index.choices, null=False, blank=False)
     est_valide = models.BooleanField(default=False, editable=False)
-    paper = models.FileField(blank=False, null=False, allow_empty_file=False)
+    papier = models.FileField("Papier", upload_to='files/')
     papierType = models.CharField("Type", max_length=50, choices=PapierType.choices, null=False, blank=False)
     def __str__(self):
         return self.titre
@@ -50,4 +50,5 @@ class CommunicationInternational(Papier):
     date = models.DateField("Date du Conférence", null=False, blank=False)
     pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
     pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
+    communication = models.FileField("Communication", upload_to='files/')
     communicationInternationalType = models.CharField("Type", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
