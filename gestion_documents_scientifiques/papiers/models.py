@@ -8,11 +8,15 @@ class Papier(models.Model):
         WEB_OF_SCIENCE = "WEB_OF_SCIENCE", "Web Of Science"
         AUTRE = "AUTRE", "Autre"
         AUCUNE = "AUCUNE", "Aucune"
+    class PapierType(models.TextChoices):
+        PUBLICATION_REVUE_INTERNATIONAL = 'PUBLICATION REVUE INTERNATIONAL', 'Publication Revue International'
+        CHAPITRE_OUVRAGE = 'CHAPITRE OUVRAGE', 'Chapitre Ouvrage'
+        COMMUNICATION_INTERNATIONAL = 'COMMUNICATION INTERNATIONAL', 'Communication International'
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     titre = models.CharField("Titre", max_length=200, null=False, blank=False)
     indexation = models.CharField("Indexation", max_length=50, choices=Index.choices, null=False, blank=False)
     est_valide = models.BooleanField(default=False, editable=False)
-
+    papierType = models.CharField("Type", max_length=50, choices=PapierType.choices, null=False, blank=False)
     def __str__(self):
         return self.titre
 
@@ -45,4 +49,4 @@ class CommunicationInternational(Papier):
     date = models.DateField("Date du Conférence", null=False, blank=False)
     pageDébut = models.PositiveIntegerField("Page de Début", null=False, blank=False)
     pageFin = models.PositiveIntegerField("Page de Fin", null=False, blank=False)
-    type = models.CharField("Type", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
+    communicationInternationalType = models.CharField("Type", max_length=50, choices=CommunicationInternationalType.choices, null=False, blank=False)
