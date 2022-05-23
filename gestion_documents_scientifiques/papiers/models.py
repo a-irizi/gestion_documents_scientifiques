@@ -16,6 +16,7 @@ class Papier(models.Model):
     titre = models.CharField("Titre", max_length=200, null=False, blank=False)
     indexation = models.CharField("Indexation", max_length=50, choices=Index.choices, null=False, blank=False)
     est_valide = models.BooleanField(default=False, editable=False)
+    paper = models.FileField(blank=False, null=False, allow_empty_file=False)
     papierType = models.CharField("Type", max_length=50, choices=PapierType.choices, null=False, blank=False)
     def __str__(self):
         return self.titre
