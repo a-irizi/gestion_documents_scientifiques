@@ -3,7 +3,7 @@
         <ul>
             <div>
                 <li><a href="{% url 'account' %}">Compte</a></li>
-                <li><a href="#">Papiers</a></li>
+                <li><a href="{% url 'papers-page' %}">Papiers</a></li>
                 {% if request.user.chercheur.type == request.user.chercheur.ChercheurType.PROFESSEUR %}
                 {% if request.user.chercheur.professeur.isDirecteurLabo %}
                 <li><a href="#">Professeurs</a></li>
