@@ -1,6 +1,8 @@
 import uuid
 from django.db import models
 
+import utilisateurs
+
 # Create your models here.
 class Papier(models.Model):
     class Index(models.TextChoices):
@@ -18,6 +20,7 @@ class Papier(models.Model):
     est_valide = models.BooleanField(default=False, editable=False)
     papier = models.FileField("Papier", upload_to='files/')
     papierType = models.CharField("Type", max_length=50, choices=PapierType.choices, null=False, blank=False)
+    uploader = models.ForeignKey(to="utilisateurs.Utilisateur", null=True, on_delete=models.CASCADE, editable=False)
     def __str__(self):
         return self.titre
 
