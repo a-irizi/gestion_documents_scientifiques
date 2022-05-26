@@ -228,11 +228,14 @@ def papersPage(request):
 def addPaper(request):
     return render(request, 'utilisateurs/papiers-choix.html')
 
+
 def addPublicationRevueInternational(request):
     if request.method == 'POST':
         form = PublicationRevueInternationalForm(request.POST, request.FILES)
-        pub = form.save()
+        pub = form.save(commit=False)
         user = request.user
+        pub.uploader = user
+        pub.save()
         user.chercheur.papiers.add(pub)
         user.save()
         return redirect('papers-page')
@@ -244,8 +247,10 @@ def addPublicationRevueInternational(request):
 def addChapitreOuvrage(request):
     if request.method == 'POST':
         form = ChapitreOuvrageForm(request.POST, request.FILES)
-        chp = form.save()
+        chp = form.save(commit=False)
         user = request.user
+        chp.uploader = user
+        chp.save()
         user.chercheur.papiers.add(chp)
         user.save()
         return redirect('papers-page')
@@ -257,8 +262,10 @@ def addChapitreOuvrage(request):
 def addCommunicationInternational(request):
     if request.method == 'POST':
         form = CommunicationInternationalForm(request.POST, request.FILES)
-        com = form.save()
+        com = form.save(commit=False)
         user = request.user
+        com.uploader = user
+        com.save()
         user.chercheur.papiers.add(com)
         user.save()
         return redirect('papers-page')
